@@ -1,0 +1,428 @@
+freebsd-glue (0.2.22) UNRELEASED; urgency=medium
+
+  * update
+
+ -- GNU/kFreeBSD Maintainers <debian-bsd@lists.debian.org>  Mon, 06 Jun 2022 16:57:37 +0800
+
+freebsd-glue (0.2.22) unstable; urgency=medium
+
+  * Actually use the proper build architecture compiler
+    (thanks, Helmut Grohne!)
+  * Drop freebsd-glue's seemingly unnecessary dependency on 'make'
+
+ -- Steven Chamberlain <steven@pyro.eu.org>  Sat, 05 Mar 2016 00:48:23 +0000
+
+freebsd-glue (0.2.21) unstable; urgency=medium
+
+  * Add myself to Uploaders.
+  * No longer Build-Depends specifically on gcc-4.9 (gcc-5 and gcc-6
+    are both fine).
+  * Fixes for cross building:
+    - don't override $CC (as explained by Helmut Grohne, it forced use
+      of the build architecture compiler).
+    - build get_elf_arch with the build architecture compiler, but
+      examine a host arch binary (also suggested by Helmut Grohne,
+      thanks!)
+  * Now using Standards-Version 3.9.7 (no changes needed).
+
+ -- Steven Chamberlain <steven@pyro.eu.org>  Wed, 02 Mar 2016 14:06:22 +0000
+
+freebsd-glue (0.2.20) unstable; urgency=low
+
+  * Upload to unstable
+  
+  [ Steven Chamberlain ]
+  * Switch to gcc-4.9 (Closes: #751309)
+  * Remove funopen, fwopen and fropen definitions, now provided by libbsd
+    (Closes: #759249)
+
+ -- Christoph Egger <christoph@debian.org>  Mon, 25 Aug 2014 13:17:44 -0700
+
+freebsd-glue (0.2.19) unstable; urgency=low
+
+  * Add MAXHOSTNAMELEN fallback.
+  * Add isnumber().
+
+ -- Robert Millan <rmh@debian.org>  Sat, 22 Mar 2014 20:27:53 +0100
+
+freebsd-glue (0.2.18) experimental; urgency=low
+
+  * Add PATH_MAX and MAXPATHLEN fallbacks for systems that lack them.
+  * Uploading to experimental as kfreebsd-kernel-headers 10.0 (needed by
+    capsicum) is only available there.
+
+ -- Robert Millan <rmh@debian.org>  Tue, 21 Jan 2014 12:48:14 +0100
+
+freebsd-glue (0.2.17) unstable; urgency=low
+
+  * Remove dependency on libutil-freebsd-dev (it was only needed during
+    transition of libutil.h).
+  * Allow users to force use of embedded headers even when building
+    natively, by setting __FREEBSD_GLUE_USE_EMBEDDED_HEADERS macro. This
+    makes it possible to detect FTBFS errors that affect other platforms
+    also on GNU/kFreeBSD.
+  * Update embedded copy of <sys/elf_common.h>.
+  * Add getbsize().
+  * Add arc4random_buf() prototype to <stdlib.h>.
+  * Add _PATH_GBDE, _PATH_GELI and _PATH_MDCONFIG to <paths.h>.
+  * Add swapon() and swapoff() prototypes to <unistd.h>.
+  * Add basename_r().
+  * Add capsicum(4) family of functions.
+
+ -- Robert Millan <rmh@debian.org>  Mon, 20 Jan 2014 23:45:07 +0100
+
+freebsd-glue (0.2.16) unstable; urgency=low
+
+  * Only include <sys/sysctl.h> when needed (should fix FTBFS on
+    hurd-i386).
+  * Add __ELF_WORD_SIZE to <machine/__get_elf_arch.h>.
+  * Add a few FreeBSD-specific clocks on non-kFreeBSD systems.
+
+ -- Robert Millan <rmh@debian.org>  Wed, 08 Jan 2014 15:15:59 +0100
+
+freebsd-glue (0.2.15) unstable; urgency=low
+
+  * Fix /usr/lib/freebsd/bmake permissions.
+  * Make the libbsd-dev B-D explicit now that freebsd-buildutils doesn't
+    pull it.
+
+ -- Robert Millan <rmh@debian.org>  Wed, 08 Jan 2014 02:09:59 +0100
+
+freebsd-glue (0.2.14) unstable; urgency=low
+
+  * Add <sys/elf.h>.
+  * Switch to bmake, and finish breaking the circular build-dependency
+    on freebsd-buildutils.
+
+ -- Robert Millan <rmh@debian.org>  Wed, 08 Jan 2014 01:30:59 +0100
+
+freebsd-glue (0.2.13) unstable; urgency=low
+
+  * Explicitly request gcc-4.8 as sbuild can't handle build dependencies
+    properly (sigh).
+
+ -- Robert Millan <rmh@debian.org>  Thu, 02 Jan 2014 20:15:04 +0100
+
+freebsd-glue (0.2.12) unstable; urgency=low
+
+  * Invoke FreeBSD make explicitly as fmake.
+
+ -- Robert Millan <rmh@debian.org>  Thu, 02 Jan 2014 19:47:27 +0100
+
+freebsd-glue (0.2.11) unstable; urgency=low
+
+  * Yet another attempt at fixing FTBFS with older freebsd-buildutils...
+
+ -- Robert Millan <rmh@debian.org>  Thu, 02 Jan 2014 18:41:42 +0100
+
+freebsd-glue (0.2.10) unstable; urgency=low
+
+  * Attempt to use fmake, then fallback to make (in /usr/lib/freebsd).
+    This garantees FreeBSD make no matter which freebsd-buildutils we're
+    using.
+
+ -- Robert Millan <rmh@debian.org>  Thu, 02 Jan 2014 18:17:49 +0100
+
+freebsd-glue (0.2.9) unstable; urgency=low
+
+  * sysarch.c: Avoid conflicting declarations in <machine/sysarch.h>.
+  * Require GCC 4.8 or later to fix FTBFS on ia64, powerpc and sparc.
+
+ -- Robert Millan <rmh@debian.org>  Thu, 02 Jan 2014 17:52:03 +0100
+
+freebsd-glue (0.2.8) unstable; urgency=low
+
+  * Correctly setup BSD version of MAKEFLAGS to support parallel builds.
+  * Provide legacy symlinks for make and mtree (for now, fmake and
+    fmtree).
+  * Add wrapper for bmake (force it to use /usr/share/mk-freebsd instead
+    of its own /usr/share/mk).
+  * Add a few sysarch-based functions: amd64_get_fsbase,
+    amd64_get_gsbase, amd64_set_fsbase, amd64_set_gsbase,
+    i386_get_fsbase, i386_get_gsbase, i386_set_fsbase and
+    i386_set_gsbase.
+
+ -- Robert Millan <rmh@debian.org>  Thu, 02 Jan 2014 16:03:44 +0100
+
+freebsd-glue (0.2.7) unstable; urgency=low
+
+  * Remove getpeereid(), use version from libbsd instead.
+
+ -- Robert Millan <rmh@debian.org>  Sun, 29 Dec 2013 00:53:25 +0100
+
+freebsd-glue (0.2.6) unstable; urgency=low
+
+  * Use -O2 for normal build and -Os for udeb build.
+  * Use MAKEOBJDIRPREFIX instead of MAKEOBJDIR, so that each library has
+    its own object directory.
+  * Provide bsd_sendfile() syscall stub, and map sendfile() to it in
+    <sys/socket.h>.
+  * Convert cget* family of functions into dummy stubs. This gets rid of
+    -ldb dependency, which isn't permissible outside of /usr.
+    (Closes: #732617)
+  * Add getpeereid().
+
+ -- Robert Millan <rmh@debian.org>  Sun, 29 Dec 2013 00:30:03 +0100
+
+freebsd-glue (0.2.5) unstable; urgency=low
+
+  * Include libbsdxml.so in freebsd-glue.
+  * Split udeb build into a separate target. Exclude getcap.c from that
+    build and its associated -ldb.  (Closes: #731258)
+
+ -- Robert Millan <rmh@debian.org>  Tue, 03 Dec 2013 22:28:21 +0100
+
+freebsd-glue (0.2.4) unstable; urgency=low
+
+  * Remove libutil glue code, depend on the real thing instead.
+
+ -- Robert Millan <rmh@debian.org>  Sun, 01 Dec 2013 12:58:10 +0100
+
+freebsd-glue (0.2.3) unstable; urgency=low
+
+  * Only install *.so symlink for libfreebsd-glue.
+
+ -- Robert Millan <rmh@debian.org>  Sat, 30 Nov 2013 13:08:07 +0100
+
+freebsd-glue (0.2.2) unstable; urgency=low
+
+  * Add strnstr().
+  * setfstab: Only fail when file != NULL. Set errno when failing.
+  * Provide libbsdxml stubs (for libexpat).
+
+ -- Robert Millan <rmh@debian.org>  Sat, 30 Nov 2013 12:09:03 +0100
+
+freebsd-glue (0.2.1) unstable; urgency=low
+
+  * Fix broken external references in mac_set.c.
+
+ -- Robert Millan <rmh@debian.org>  Fri, 29 Nov 2013 18:38:51 +0100
+
+freebsd-glue (0.2.0) experimental; urgency=low
+
+  * Provide a shared version of libfreebsd-glue.
+
+ -- Robert Millan <rmh@debian.org>  Fri, 29 Nov 2013 14:05:57 +0100
+
+freebsd-glue (0.1.15) unstable; urgency=low
+
+  * Add INADDR_ALLRPTS_GROUP, INADDR_CARP_GROUP, INADDR_PFSYNC_GROUP and
+    INADDR_ALLMDNS_GROUP magic IPv4 addresses.
+  * Add the mac_* family of functions (as defined by <sys/mac.h>.
+  * Move <sys/stdint.h> to <stdint.h>.
+  * Add <sys/stdint.h> (as #include stub).
+  * Add _PATH_DEVZERO.
+  * Split additions for libcrypt, libutil and libz into separate
+    libraries.
+  * Add getbootfile().
+  * Add <ndbm.h> stub (for libgdbm).
+  * Add <sys/file.h> (stub for <sys/kglue/sys/file.h>).
+  * Add <sys/user.h> and <sys/proc.h>.
+  * Add _PATH_UUCPLOCK (diverge from upstream as per FHS).
+  * Add mac_set family of functions.
+  * Update copyright information.
+
+ -- Robert Millan <rmh@debian.org>  Sun, 24 Nov 2013 14:22:23 +0100
+
+freebsd-glue (0.1.14) unstable; urgency=low
+
+  * Redirect to native <machine/elf.h> on kFreeBSD.
+  * Build get_elf_arch.c using -Wall -Werror. Fix missing return and
+    implicit declarations.
+
+ -- Robert Millan <rmh@debian.org>  Wed, 30 Oct 2013 00:04:50 +0100
+
+freebsd-glue (0.1.13) unstable; urgency=low
+
+  * Disable kernel-specific paths on non-kFreeBSD.
+  * Add <osreldate.h> and <sys/limits.h>.
+  * Add STAILQ_LAST() to <sys/queue.h>.
+  * Move CFLAGS to src/Makefile.
+  * Expand <sys/elf32.h> and <sys/elf64.h> to support non-kFreeBSD
+    platforms.
+  * Add <machine/elf.h> (with tricky build magic to generate ELF_ARCH).
+
+ -- Robert Millan <rmh@debian.org>  Mon, 28 Oct 2013 23:10:03 +0100
+
+freebsd-glue (0.1.12) unstable; urgency=low
+
+  * Fix improper allocation in funopen(). (Closes: #726970)
+  * Add _PATH_UFSSUSPEND.
+  * Add arc4random_stir() prototype (for libbsd).
+  * Work around broken macro argument in TAILQ_FOREACH_REVERSE_SAFE
+
+ -- Robert Millan <rmh@debian.org>  Sat, 26 Oct 2013 16:09:29 +0200
+
+freebsd-glue (0.1.11) unstable; urgency=low
+
+  * Fix unresolved dependencies on libc hidden symbols (_open, _read,
+    _close), libdb and cpuset family of functions.
+  * Add zlib1g-dev to Build-Depends and Depends.
+  * getosreldate.c: Move mib and size to kFreeBSD-specific area.
+
+ -- Robert Millan <rmh@debian.org>  Sun, 20 Oct 2013 15:14:22 +0200
+
+freebsd-glue (0.1.10) unstable; urgency=low
+
+  * Add libdb-dev to Depends / Build-Depends.
+
+ -- Robert Millan <rmh@debian.org>  Sun, 20 Oct 2013 12:56:14 +0200
+
+freebsd-glue (0.1.9) unstable; urgency=low
+
+  * Build with full -Werror.
+  * Implement funopen(), fropen() and fwopen().
+  * Add zopen().
+  * New headers: grp.h, db.h (as <db_185.h> stub).
+  * Add _PATH_ETC.
+  * Fix stdlib.h indirect load of libutil.h.
+  * Add cget* family of functions.
+  * Add getloginclass() and setloginclass() kernel calls.
+  * Add dummy crypt_get_format() and crypt_set_format().
+
+ -- Robert Millan <rmh@debian.org>  Sun, 20 Oct 2013 02:08:57 +0200
+
+freebsd-glue (0.1.8) unstable; urgency=low
+
+  * Change header protectionin <rpc/xdr.h> to avoid collision with
+    glibc's.
+
+ -- Robert Millan <rmh@debian.org>  Sun, 06 Oct 2013 15:03:15 +0200
+
+freebsd-glue (0.1.7) unstable; urgency=low
+
+  * Fix minor formatting error in setfstab().
+  * Add <rpc/xdr.h>.
+
+ -- Robert Millan <rmh@debian.org>  Sun, 06 Oct 2013 14:37:43 +0200
+
+freebsd-glue (0.1.6) unstable; urgency=low
+
+  * Define __FreeBSD_version as __FreeBSD_kernel_version when available.
+  * Implement setfib, setfstab (as ENOSYS stub) and getfstab (with
+    hardcoded return value).
+
+ -- Robert Millan <rmh@debian.org>  Thu, 03 Oct 2013 01:11:03 +0200
+
+freebsd-glue (0.1.5) unstable; urgency=low
+
+  * Add include_next <sys/queue.h> to sys/queue.h in order to bring back
+    macros that were disabled in kernel headers.
+
+ -- Robert Millan <rmh@debian.org>  Mon, 09 Sep 2013 15:06:42 +0200
+
+freebsd-glue (0.1.4) unstable; urgency=low
+
+  * Implement srandomdev().
+  * Implement getdiskbyname().
+  * Add <timeconv.h> stubs.
+
+ -- Robert Millan <rmh@debian.org>  Mon, 02 Sep 2013 20:48:37 +0200
+
+freebsd-glue (0.1.3) unstable; urgency=low
+
+  * linkaddr.c is kFreeBSD-specific.
+
+ -- Robert Millan <rmh@debian.org>  Tue, 06 Aug 2013 18:14:14 +0200
+
+freebsd-glue (0.1.2) unstable; urgency=low
+
+  * Add <sys/_stdint.h> to fix buildability of <libutil.h>.
+
+ -- Robert Millan <rmh@debian.org>  Tue, 06 Aug 2013 17:22:40 +0200
+
+freebsd-glue (0.1.1) unstable; urgency=low
+
+  * Put includes of <sys/kern/*.h> OUTSIDE the header protection (which
+    they intentionally duplicate).
+  * FreeBSD <stdio.h> and <sys/types.h> have a kludge to declare
+    lseek(). Duplicate the Glibc declaration here.
+  * <sys/stat.h> implicitly includes <sys/time.h>.
+  * Add trimdomain, link_addr and link_ntoa.
+
+ -- Robert Millan <rmh@debian.org>  Sun, 04 Aug 2013 18:20:40 +0200
+
+freebsd-glue (0.1.0) unstable; urgency=low
+
+  * Fix header pollution in <unistd.h> by moving non-trivial inline
+    functions into static objects of their own.
+  * Add nlm_syscall() inline function.
+
+ -- Robert Millan <rmh@debian.org>  Sun, 04 Aug 2013 16:21:56 +0200
+
+freebsd-glue (0.0.10) unstable; urgency=low
+
+  [ Guillem Jover ]
+  * Switch to canonical Vcs URLs.
+
+  [ Robert Millan ]
+  * Add <net/ethernet.h> which includes <netinet/ether.h> (for
+    ether_ntoa).
+
+ -- Robert Millan <rmh@debian.org>  Thu, 01 Aug 2013 21:17:17 +0200
+
+freebsd-glue (0.0.9) unstable; urgency=low
+
+  * Make <sys/_types.h> and <machine/_types.h> usable on non-kFreeBSD.
+
+ -- Robert Millan <rmh@debian.org>  Mon, 22 Jul 2013 21:55:14 +0200
+
+freebsd-glue (0.0.8) unstable; urgency=low
+
+  * Include <grp.h> in <unistd.h> (for initgroups).
+  * Add __containerof() to <sys/cdefs.h>.
+  * Add roundup2 in <sys/param.h>. It is no longer provided by glibc
+    (??).
+
+ -- Robert Millan <rmh@debian.org>  Tue, 16 Jul 2013 15:21:09 +0200
+
+freebsd-glue (0.0.7) unstable; urgency=low
+
+  * Replace versions of freebsd-buildutils which included their own
+    yacc. (Closes: #715138)
+  * Misc fixes to accomodate for FreeBSD 9.1.
+
+ -- Robert Millan <rmh@debian.org>  Tue, 09 Jul 2013 22:32:45 +0200
+
+freebsd-glue (0.0.6) unstable; urgency=low
+
+  * Misc additions to simplify PPP patchset in freebsd-utils.
+  * Add yacc -> byacc symlink.
+  * Add _SAFE macros in <sys/queue.h>.
+
+ -- Robert Millan <rmh@debian.org>  Fri, 05 Jul 2013 22:02:54 +0200
+
+freebsd-glue (0.0.5) unstable; urgency=low
+
+  * Drag libbsd counterparts into <stdio.h> and <stdlib.h>.
+
+ -- Robert Millan <rmh@debian.org>  Wed, 19 Jun 2013 21:05:20 +0200
+
+freebsd-glue (0.0.4) unstable; urgency=high
+
+  * Add libutil.h and nlist.h.
+
+ -- Robert Millan <rmh@debian.org>  Thu, 21 Jun 2012 19:51:41 +0200
+
+freebsd-glue (0.0.3) unstable; urgency=low
+
+  * Move freebsd-buildutils from Depends to Recommends to break circular
+    dependency.  (Closes: #674806)
+  * Don't include <sys/_types.h> on non-kFreeBSD.  (Closes: #674803)
+
+ -- Robert Millan <rmh@debian.org>  Mon, 28 May 2012 11:02:56 +0200
+
+freebsd-glue (0.0.2) unstable; urgency=low
+
+  * Add Vcs-* fields and set Maintainer to debian-bsd.
+  * Add Breaks on freebsd-buildutils (<< 9.0-10).  (Closes: #674528)
+  * Include <string.h> before feature_present().
+  * Make <sys/types.h> implicitly include <sys/select.h>.
+
+ -- Robert Millan <rmh@debian.org>  Fri, 25 May 2012 19:13:17 +0200
+
+freebsd-glue (0.0.1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Robert Millan <rmh@debian.org>  Sat, 19 May 2012 14:35:32 +0200

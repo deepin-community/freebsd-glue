@@ -1,0 +1,66 @@
+Source: freebsd-glue
+Section: devel
+Priority: extra
+Maintainer: GNU/kFreeBSD Maintainers <debian-bsd@lists.debian.org>
+Uploaders:
+ Robert Millan <rmh@debian.org>,
+ Steven Chamberlain <steven@pyro.eu.org>,
+Build-Depends:
+ debhelper (>= 8.0),
+ kfreebsd-kernel-headers (>= 10.0~3) [kfreebsd-any],
+ freebsd-mk,
+ bmake,
+ libbsd-dev,
+ libdb-dev,
+ zlib1g-dev,
+Vcs-Browser: http://anonscm.debian.org/viewvc/glibc-bsd/trunk/freebsd-glue/
+Vcs-Svn: svn://anonscm.debian.org/glibc-bsd/trunk/freebsd-glue/
+Standards-Version: 3.9.7
+
+Package: freebsd-glue
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ libfreebsd-glue-0 (= ${binary:Version}),
+ original-awk,
+ libbsd-dev (>= 0.7.0-1~),
+ libdb-dev,
+ zlib1g-dev,
+ libexpat-dev,
+ libgdbm-dev,
+ byacc,
+Recommends:
+# Can't put this in Depends because it would introduce a circular dependency
+# (see #674806).
+ freebsd-buildutils,
+Conflicts: kfreebsd-kernel-headers (<< 0.80)
+Replaces:
+ freebsd-buildutils (<< 10.0~svn259404-4~),
+Breaks: freebsd-buildutils (<< 9.0-10)
+Description: Emulate a FreeBSD build environment
+ This package provides a set of glue headers and symbolic links to emulate
+ a FreeBSD build environment.
+ .
+ Its goal is to make it as easy as possible to build source code written for
+ FreeBSD on Debian, by adding the necessary glue so that equivalent interfaces
+ in packages like freebsd-buildutils, libbsd-dev or libexpat-dev are directly
+ available to pristine FreeBSD code.
+ .
+ freebsd-glue strives for bug-for-bug compatibility and will even attempt
+ to accommodate for unspecified features (such as implicit header inclusion),
+ as long as this doesn't cause breakage in other areas.
+
+Package: libfreebsd-glue-0
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: FreeBSD glue environment (shared objects)
+ Shared objects for the FreeBSD glue environment.
+
+Package: libfreebsd-glue-0-udeb
+Package-Type: udeb
+Section: debian-installer
+Architecture: kfreebsd-any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: FreeBSD glue environment (udeb)
+ Shared objects for the FreeBSD glue environment.
+ .
+ This is a minimal package for use in debian-installer.

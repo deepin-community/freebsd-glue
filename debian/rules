@@ -1,0 +1,122 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+DEB_HOST_ARCH_OS	?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+
+# Determine host architecture compiler
+DEB_HOST_GNU_TYPE	?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+ifeq ($(origin CC),default)
+CC := $(DEB_HOST_GNU_TYPE)-gcc
+endif
+
+# Determine build architecture compiler
+DEB_BUILD_GNU_TYPE	?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+NATIVE_CC		?= $(DEB_BUILD_GNU_TYPE)-gcc
+
+export SHELL = bash
+
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+	NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+
+	# Do not mess with MAKEFLAGS until we transfer control to BSD make (see below)
+	BSD_MAKEFLAGS += -j$(NUMJOBS)
+endif
+
+DESTDIR = $(CURDIR)/debian/tmp
+PATH := /usr/lib/freebsd:$(PATH)
+PMAKE := \
+	MAKEFLAGS=$(BSD_MAKEFLAGS) \
+	MAKEOBJDIRPREFIX=$(CURDIR)/obj-deb \
+	CFLAGS="$(CFLAGS) -O2" \
+	DESTDIR="$(DESTDIR)" \
+	bmake -m /usr/share/mk-freebsd \
+	CC=$(CC) \
+	$(NULL)
+PMAKE_UDEB := \
+	MAKEFLAGS=$(BSD_MAKEFLAGS) \
+	MAKEOBJDIRPREFIX=$(CURDIR)/obj-udeb \
+	CFLAGS="$(CFLAGS) -Os" \
+	DESTDIR="$(DESTDIR)-udeb" \
+	bmake -m /usr/share/mk-freebsd \
+	CC=$(CC) \
+	RESCUE=yes \
+	$(NULL)
+
+clean:
+	dh_testdir
+	rm -rf obj-{deb,udeb} debian/tmp-udeb
+	rm -f include/machine/__get_elf_arch.h src/get_elf_arch src/host_elf_arch
+	dh_clean
+
+# Build this for the build architecture, as it is executed during build
+# to examine host_elf_arch
+src/get_elf_arch:
+	$(NATIVE_CC) src/get_elf_arch.c -o src/get_elf_arch
+# Build this for the host architecture.
+src/host_elf_arch: src/host_elf_arch.c
+include/machine/__get_elf_arch.h: src/get_elf_arch src/host_elf_arch
+	$^ src/host_elf_arch > $@
+
+build: build-arch
+build-arch: build-deb build-udeb
+
+build-deb: include/machine/__get_elf_arch.h
+	$(PMAKE) obj
+	$(PMAKE)
+
+build-udeb: include/machine/__get_elf_arch.h
+	$(PMAKE_UDEB) obj
+	$(PMAKE_UDEB)
+
+build-indep:
+	:
+
+install-arch: build-arch
+	dh_testdir
+	dh_testroot
+	dh_prep -a
+	dh_installdirs -a
+	mkdir -p $(DESTDIR){,-udeb}/{usr/,}lib
+
+	$(PMAKE) install
+	$(PMAKE_UDEB) install
+
+	echo "GROUP( libexpat.so )" > \
+		$(DESTDIR)/usr/lib/libbsdxml.so
+	ln -s $(DEB_HOST_GNU_TYPE)/libexpat.a \
+		$(DESTDIR)/usr/lib/libbsdxml.a
+
+	mkdir -p $(DESTDIR)/usr/lib/freebsd
+	install -m755 debian/local/scripts/bmake $(DESTDIR)/usr/lib/freebsd/
+
+	dh_install -a --list-missing
+
+binary: binary-arch binary-indep
+binary-arch: install-arch
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs -a
+	dh_installdocs -a
+#	dh_installexamples
+#	dh_installinit
+#	dh_installcron
+#	dh_installinfo
+#	dh_installman
+	dh_link -a
+	dh_strip -a
+	dh_compress -a
+	dh_fixperms -a
+#	dh_perl
+#	dh_python
+	dh_makeshlibs -a
+ifeq ($(DEB_HOST_ARCH_OS), kfreebsd)
+	dh_makeshlibs -plibfreebsd-glue-0 --add-udeb=libfreebsd-glue-0-udeb
+endif
+	dh_installdeb -a
+	dh_shlibdeps -a
+	dh_gencontrol -a
+	dh_md5sums -a
+	dh_builddeb -a
+
+binary-indep:
+	:
